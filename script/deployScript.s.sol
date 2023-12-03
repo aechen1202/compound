@@ -20,7 +20,9 @@ contract deployScript is Script {
 
     function run() public {
         address admin=0xF5Bfbe59812B3f174387074C40b266dC8590fad9;
-        vm.startBroadcast();
+        uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
+        vm.startBroadcast(deployerPrivateKey);
+
         
         //InterestRateModel
         WhitePaperInterestRateModel whitePaperInterestRateModel = new WhitePaperInterestRateModel(0,0);
