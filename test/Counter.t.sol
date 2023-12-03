@@ -6,6 +6,7 @@ import {Comp} from "../src/Governance/Comp.sol";
 import {Comptroller} from "../src/Comptroller.sol";
 import {Unitroller} from "../src/Unitroller.sol";
 import {CErc20} from "../src/CErc20.sol";
+import {CToken} from "../src/CToken.sol";
 import {CErc20Delegate} from "../src/CErc20Delegate.sol";
 import {CErc20Delegator} from "../src/CErc20Delegator.sol";
 import {WhitePaperInterestRateModel} from "../src/WhitePaperInterestRateModel.sol";
@@ -25,6 +26,7 @@ contract CounterTest is Test {
     SimplePriceOracle public simplePriceOracle;
     SimplePriceOracle public priceOracle;
     address public admin = makeAddr("admin");
+    address public user1  = makeAddr("User1 ");
    
     function setUp() public {
         vm.startPrank(admin);
@@ -52,7 +54,7 @@ contract CounterTest is Test {
 
         cErc20Delegator = new CErc20Delegator(
             address(token),
-            comptroller,
+            unitrollerProxy,
             whitePaperInterestRateModel,
             1,
             "cArt",
@@ -63,13 +65,17 @@ contract CounterTest is Test {
             new bytes(0)
         );
 
-
+        unitrollerProxy._supportMarket(CToken(address(cErc20Delegator)));
       
     }
 
-    function test_comp() public {
-        console.log(address(comp));
-        console.log(address(comptroller));
+    function test_case2() public {
+        vm.startPrank(user1);
+        uint256 redeemTokens = 100 * 10**18;
+        deal(address(token), user1, redeemTokens);
+        token.approve(address(cErc20Delegator), redeemTokens);
+        cErc20Delegator.mint(redeemTokens);
+        cErc20Delegator.redeem(redeemTokens);
     }
 }
 

@@ -47,7 +47,7 @@ contract deployScript is Script {
 
         CErc20Delegator cErc20Delegator = new CErc20Delegator(
             address(token),
-            comptroller,
+            unitrollerProxy,
             whitePaperInterestRateModel,
             1,
             "cArt",
