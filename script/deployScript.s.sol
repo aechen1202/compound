@@ -42,14 +42,14 @@ contract deployScript is Script {
         unitrollerProxy._setPriceOracle(priceOracle);
 
         //token
-        erc20Token token =new erc20Token("artToken","art");
+        erc20Token token =new erc20Token("artToken","art",100000000000);
         CErc20Delegate cErc20Delegate = new CErc20Delegate();
 
         CErc20Delegator cErc20Delegator = new CErc20Delegator(
             address(token),
             unitrollerProxy,
             whitePaperInterestRateModel,
-            1,
+            1e18,
             "cArt",
             "cArt",
             18,
@@ -62,6 +62,7 @@ contract deployScript is Script {
 }
 
 contract erc20Token is ERC20 {
-    constructor(string memory name, string memory symbol) ERC20(name, symbol) {
+    constructor(string memory name, string memory symbol,uint256 initialSupply) ERC20(name, symbol) {
+        _mint(msg.sender, initialSupply);
     }
 }
