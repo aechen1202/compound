@@ -52,8 +52,6 @@ contract CounterTest is Test {
         unitrollerProxy = Comptroller(address(unitroller));
         comptroller._become(unitroller);
         unitrollerProxy._setPriceOracle(priceOracle);
-
-       
     }
 
     //CASE2 for mint redeem
@@ -203,7 +201,6 @@ contract CounterTest is Test {
         unitrollerProxy._setCollateralFactor(CToken(address(cErc20DelegatorB)),1e18 / 4);
         unitrollerProxy._setCloseFactor(1e18/2);
         unitrollerProxy._setLiquidationIncentive(1.1 * 1e18);
-
         //因為可清算比率CloseFactor為50%，所以只能清算25顆TokenA
         vm.startPrank(user2);
         deal(address(tokenA), user2, 100 ether);
@@ -215,11 +212,9 @@ contract CounterTest is Test {
         (,,uint borrowBalance) = unitrollerProxy.getAccountLiquidity(user1);
         assertEq(borrowBalance, 25 ether);
         cErc20DelegatorA.liquidateBorrow(user1, borrowBalance , cErc20DelegatorB);
-        console.log("-------------------------------");
-        console.log(borrowBalance);
-        console.log(tokenA.balanceOf(user1));
-        console.log(cErc20DelegatorB.balanceOf(user2));
-        //assertEq(tokenA.balanceOf(user1), 50 ether);
+
+        //比原始付出去25u還大所以有賺錢
+        require(cErc20DelegatorB.balanceOf(user2)*100 > 25 ether);
     }
 
     //CASE4 tokenA tokenB liquidateBorrow
@@ -231,17 +226,21 @@ contract CounterTest is Test {
         //調整 oracle 中 token B 的價格，讓 User1 被 User2 清算
         vm.startPrank(admin);
         unitrollerProxy._setCloseFactor(1e18/2);
+        unitrollerProxy._setLiquidationIncentive(1.1 * 1e18);
 
         //價格由100下降到80，抵押可借用的資產變成40(TokenB)
         //但是借出50價值的TokenA
         //所以可以清算10價值的TokenA
-        priceOracle.setUnderlyingPrice(CToken(address(cErc20DelegatorB)),80 * 1e18);
+        priceOracle.setUnderlyingPrice(CToken(address(cErc20DelegatorB)),50 * 1e18);
 
         //因為可清算比率CloseFactor為50%，所以只能清算25顆TokenA
         vm.startPrank(user2);
         deal(address(tokenA), user2, 100 ether);
         tokenA.approve(address(cErc20DelegatorA), type(uint256).max);
-        cErc20DelegatorA.liquidateBorrow(user1, 25 ether, cErc20DelegatorB);
+         (,,uint borrowBalance) = unitrollerProxy.getAccountLiquidity(user1);
+        cErc20DelegatorA.liquidateBorrow(user1, borrowBalance , cErc20DelegatorB);
+        //比原始付出去25u還大所以有賺錢
+       require(cErc20DelegatorB.balanceOf(user2)*80 > 25 ether);
     }
 }
 
