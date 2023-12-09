@@ -231,7 +231,7 @@ contract CounterTest is Test {
         //價格由100下降到80，抵押可借用的資產變成40(TokenB)
         //但是借出50價值的TokenA
         //所以可以清算10價值的TokenA
-        priceOracle.setUnderlyingPrice(CToken(address(cErc20DelegatorB)),50 * 1e18);
+        priceOracle.setUnderlyingPrice(CToken(address(cErc20DelegatorB)),80 * 1e18);
 
         //因為可清算比率CloseFactor為50%，所以只能清算25顆TokenA
         vm.startPrank(user2);
