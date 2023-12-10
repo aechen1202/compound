@@ -212,7 +212,11 @@ contract CounterTest is Test {
         (,,uint borrowBalance) = unitrollerProxy.getAccountLiquidity(user1);
         assertEq(borrowBalance, 25 ether);
         cErc20DelegatorA.liquidateBorrow(user1, borrowBalance , cErc20DelegatorB);
-
+        
+        //清算者可獲得代幣計算方法
+        //actualRepayAmount * (liquidationIncentive * priceBorrowed) / (priceCollateral * exchangeRate)
+        //=>25*1.1*1/100*1=0.275 CTokenB
+        //=>seizeTokens-protocolSeizeShare*seizeTokens=0.275-0.275*2.8/100=0.2673 CTokenB
         //比原始付出去25u還大所以有賺錢
         require(cErc20DelegatorB.balanceOf(user2) * 100 > 25 ether * 1);
     }
