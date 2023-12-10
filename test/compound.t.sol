@@ -214,7 +214,7 @@ contract CounterTest is Test {
         cErc20DelegatorA.liquidateBorrow(user1, borrowBalance , cErc20DelegatorB);
 
         //比原始付出去25u還大所以有賺錢
-        require(cErc20DelegatorB.balanceOf(user2)*100 > 25 ether);
+        require(cErc20DelegatorB.balanceOf(user2) * 100 > 25 ether * 1);
     }
 
     //CASE4 tokenA tokenB liquidateBorrow
@@ -233,14 +233,14 @@ contract CounterTest is Test {
         //所以可以清算10價值的TokenA
         priceOracle.setUnderlyingPrice(CToken(address(cErc20DelegatorB)),80 * 1e18);
 
-        //因為可清算比率CloseFactor為50%，所以只能清算25顆TokenA
+        //因為可清算比率CloseFactor為50%，所以只能清算10顆TokenA
         vm.startPrank(user2);
         deal(address(tokenA), user2, 100 ether);
         tokenA.approve(address(cErc20DelegatorA), type(uint256).max);
          (,,uint borrowBalance) = unitrollerProxy.getAccountLiquidity(user1);
         cErc20DelegatorA.liquidateBorrow(user1, borrowBalance , cErc20DelegatorB);
         //比原始付出去25u還大所以有賺錢
-       require(cErc20DelegatorB.balanceOf(user2)*80 > 25 ether);
+       require(cErc20DelegatorB.balanceOf(user2) * 80 > borrowBalance * 1);
     }
 }
 
