@@ -133,6 +133,7 @@ contract compoundAave is Test {
         AaveFlashLoan aaveFlashLoan =new AaveFlashLoan(user2);
         //UNI抵押價值=1000顆*4U*0.5(CollateralFactor)=2000U
         //Close factor=50%，可清算2500 usdc * 0.5 = 1250 usdc
+        //構思上希望aaveFlashLoan是可以支援不同資產清算所以參數多一點
         address aavePool=0x2f39d218133AFaB8F2B819B1066c7E434Ad94E9e;
         uint256 aaveAmount = 1250  * 10 ** 6;
         address aaveAsset = USDC;
