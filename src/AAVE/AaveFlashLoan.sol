@@ -59,10 +59,18 @@ contract AaveFlashLoan {
     
     //uniswap UNI tp USDC
     uint swapAmount=IERC20(compoundData.underlyTokenCollateral).balanceOf(address(this));
-    IERC20(compoundData.underlyTokenCollateral).approve(uniswapV3Router,swapAmount);
+    uniswap(compoundData.underlyTokenCollateral, asset, swapAmount);
+
+    //approve aave pool using usdc to pay back loan
+    IERC20(asset).approve(address(POOL(compoundData.aavePool)), amount + premium);
+    return true;
+  }
+
+  function uniswap(address tokenIn, address tokenOut, uint swapAmount) internal returns (bool){
+    IERC20(tokenIn).approve(uniswapV3Router,swapAmount);
     ISwapRouter.ExactInputSingleParams memory swapParams = ISwapRouter.ExactInputSingleParams({
-            tokenIn: compoundData.underlyTokenCollateral,
-            tokenOut: asset,
+            tokenIn: tokenIn,
+            tokenOut: tokenOut,
             fee: 3000,
             recipient: address(this),
             deadline: block.timestamp,
@@ -71,11 +79,8 @@ contract AaveFlashLoan {
             sqrtPriceLimitX96: 0
         });
     ISwapRouter(uniswapV3Router).exactInputSingle(swapParams);
-
-    //approve aave pool using usdc to pay back loan
-    IERC20(asset).approve(address(POOL(compoundData.aavePool)), amount + premium);
     return true;
-}
+  }
 
   function ADDRESSES_PROVIDER(address pool) public view returns (IPoolAddressesProvider) {
     return IPoolAddressesProvider(pool);

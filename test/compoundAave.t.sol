@@ -95,7 +95,7 @@ contract compoundAave is Test {
         //Liquidation incentive 設為 8% (1.08 * 1e18)
         unitrollerProxy._setLiquidationIncentive(1.08 * 1e18);
 
-        //add tokenA Reserve for test 100 ether
+        //add USDC Reserve for test
         deal(USDC, admin, 1000000 * 10 ** 6);
         IERC20(USDC).approve(address(cUSDC), type(uint256).max);
         cUSDC._addReserves(2500 * 10 ** 6);
@@ -119,7 +119,7 @@ contract compoundAave is Test {
         vm.stopPrank();
     }
     //將 UNI 價格改為 $4 使 User1 產生 Shortfall，並讓 User2 透過 AAVE 的 Flash loan 來借錢清算 User1
-    function test_case6_AAVA() public {
+    function test_case6_AAVE() public {
         //User1 使用 1000 顆 UNI 作為抵押品借出 2500 顆 USDC
         test_case6_borrow();
        
